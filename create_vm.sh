@@ -5,6 +5,7 @@ DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/user-list.cfg
 
 print_usage() {
+    set +x
     echo ""
     echo "Usage: create_vm.sh [user-id] [VM OPTIONS]"
     echo ""
@@ -32,8 +33,10 @@ print_usage() {
     echo ""
 
     if [ $# -eq 1 ]; then
+        set -x
         exit $1
     fi
+    set -x
     exit 1
 }
 
