@@ -10,10 +10,11 @@ print_usage() {
     echo "Usage: create_vm.sh [user-id] [VM OPTIONS]"
     echo ""
     echo "    VM OPTIONS:"
-    echo "       --dev           : Create the Dev VM"
-    echo "       --dev-lite      : Create the Headless Dev VM"
-    echo "       --all <version> : Create the Contrail all-in-one and UI VM"
-    echo "       --destroy       : Destroy the VM"
+    echo "       --dev                            : Create the Dev VM"
+    echo "       --dev-lite                       : Create the Headless Dev VM"
+    echo "       --all <version>                  : Create the Contrail all-in-one and UI VM with the same version"
+    echo "       --all <aio version> <ui version> : Create the Contrail all-in-one and UI VM with input versions"
+    echo "       --destroy                        : Destroy the VM"
     echo ""
     echo "Note: Each developer is assigned with an ip range. The dev VM is created with the"
     echo "first ip in that range. For example, if your assgined range is 10.155.75.100-109, then"
@@ -155,6 +156,8 @@ create_vm() {
         echo "Creating ${user}_${name} vm with IP $base_ip.$offset..."
         if [ "$name" == "all" ]; then
             echo "Creating ${user}_ui vm with IP $ui_ip..."
+            echo "${user}_${name} version: $tag"
+            echo "${user}_ui version: $ui_tag"
         fi
         vagrant up
     fi
@@ -171,7 +174,14 @@ do
     case "$1" in
         --dev)      dev_vm=1                           ;;
         --dev-lite) dev_lite_vm=1                      ;;
-        --all)      all_vm=1; tag=$2; ui_tag=$2; shift ;;
+        --all)      all_vm=1; tag=$2;
+                    if [ -z "$3" ]; then
+                        ui_tag=$2
+                        shift
+                    else
+                        ui_tag=$3
+                        shift 2
+                    fi                                 ;;
         --destroy)  destroy=1                          ;;
         --help)     print_usage 0                      ;;
         -*)         echo "Error! Unknown option $1";
